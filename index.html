@@ -77,6 +77,13 @@
             //copiesCountRef.runTransaction(function(copies){
             //  console.log(copies)
             //})
+            if(name.value == "" || author.value == "" || year.value ==""){
+                document.getElementById("bookName").innerHTML = "All values must be filled...";
+                document.getElementById("bookAuthor").innerHTML = "";
+                document.getElementById("bookYear").innerHTML = "";
+                document.getElementById("bookCopies").innerHTML = "";
+            }
+            else{
 
 
             
@@ -123,10 +130,17 @@
 
         //console.log("end");
 
-        
+            }
         }
 
         function findBook(){
+            if(name.value == ""){
+                document.getElementById("bookName").innerHTML = "Name must be filled...";
+                document.getElementById("bookAuthor").innerHTML = "";
+                document.getElementById("bookYear").innerHTML = "";
+                document.getElementById("bookCopies").innerHTML = "";
+            }
+            else{
             const dbref = ref(database)
             get(child(dbref, 'Books/' + name.value)).then((snapshot)=> {
                 if(snapshot.exists()){
@@ -147,6 +161,7 @@
             }).catch((error) => {
                 console.error(error);
             })
+        }
         }
 /*
         function getCopies(name){
