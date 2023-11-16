@@ -32,7 +32,7 @@
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
-        import { getDatabase, ref, set, get, child, update, DataSnapshot, push } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child, update, DataSnapshot, push, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
       
@@ -53,6 +53,7 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const database = getDatabase();
+        
 
         
         var addBookButton = document.getElementById("addBookBtn");
@@ -61,17 +62,24 @@
         var name = document.getElementById("NameBox");
         var author = document.getElementById("AuthorBox");
         var year = document.getElementById("YearBox");
-        var year_children = 0;
-
+        var copies = 0;
+        //console.log(copies);
         
         function addBook(){
+            //console.log("start");
+            //const copiesCountRef = ref(database, "Books/" + name.value +'/copies');
+            //copiesCountRef.runTransaction(function(copies){
+            //  console.log(copies)
+            //})
 
-            const reference = ref(database);
-            get(child(reference, 'Years/')).then((snapshot)=>{
+
+            
+   
+            get(child(ref(database), 'Books/'+ name.value +'/copies')).then((snapshot)=>{
+                console.log("get");
                 if(snapshot.exists()){
-                    year_children = snapshot.size + 1;
-                    console.log(snapshot.size);
-                    console.log(year_children);
+                    console.log(snapshot.val());
+                    copies = snapshot.val() + 1; 
                 }
                 else{
                     console.log("Empty")
@@ -79,7 +87,7 @@
             }).catch((error)=>{
                 console.error(error);
             })
-
+     /*    
             set(ref(database, 'Authors/' + author.value), {
                 Books: name.value
             })
@@ -87,18 +95,25 @@
             set(ref(database, 'Years/' + year.value ), {
                 1: name.value
             })
-
+*/          //console.log("set");
+            //getCopies(name.value);
+            console.log("set");
             set(ref(database, 'Books/' + name.value), {
                 author: author.value,
-                year: year.value
+                year: year.value,
+                copies: copies
             })
             .then(()=>{
             alert('data succesfully added');
         })
         .catch((error)=>{
             alert("unsuccessful");
-            console.log(error);
+            //console.log(error);
         })
+
+        //console.log("end");
+
+        
         }
 
         function findBook(){
@@ -116,8 +131,22 @@
                 console.error(error);
             })
         }
+/*
+        function getCopies(name){
+            console.log(name.value)
+            get(child(ref(database), 'Books/'+ name.value +'/copies')).then((snapshot)=>{
+                if(snapshot.exists()){
+                    console.log("Num of Copies = " + snapshot.val())      
+                }
+                else{
+                    console.log("Empty")
+                }
+            }).catch((error)=>{
+                console.error(error);
+            })
+        }
 
-
+*/
         addBookButton.addEventListener('click', addBook);
         findBookButton.addEventListener('click', findBook);
 
