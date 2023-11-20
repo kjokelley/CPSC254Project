@@ -26,12 +26,13 @@
 
 
         
-
+        <br>
         <button id="addBookBtn" type="button"> Add new Book</button>
         <br>
         <button id="findBookBtn" type="button">Find Book</button>
         <br>
-        <p id="bookName">Enter above to add or find a book!</p>
+        <button id="removeBookBtn" type="button">Remove Book</button>
+        <p id="bookName">Enter above to add, remove, or find a book!</p>
         <br>
         <p id="bookAuthor"></p>
         <br>
@@ -75,6 +76,8 @@
         
         var addBookButton = document.getElementById("addBookBtn");
         var findBookButton = document.getElementById("findBookBtn");
+        var removeBookButton = document.getElementById("removeBookBtn");
+
 
         var name = document.getElementById("NameBox");
         var author = document.getElementById("AuthorBox");
@@ -107,6 +110,7 @@
                 }
                 else{
                     console.log("Empty")
+                    copies = 1;
                 }
 
                 console.log("set");
@@ -116,7 +120,7 @@
                     copies: copies
                 })
                 .then(()=>{
-                    alert('data succesfully added');
+                    console.log("Book Added")
                 })
                 .catch((error)=>{
                     alert("unsuccessful");
@@ -156,7 +160,6 @@
             get(child(dbref, 'Books/' + name.value)).then((snapshot)=> {
                 if(snapshot.exists()){
                     console.log(snapshot.val());
-                    //const bookObj = JSON.parse(snapshot.val());
                     document.getElementById("bookName").innerHTML = "Name: " + name.value;
                     document.getElementById("bookAuthor").innerHTML = "Author: " + snapshot.val().author;
                     document.getElementById("bookYear").innerHTML = "Year Published: " + snapshot.val().year;
@@ -173,6 +176,51 @@
                 console.error(error);
             })
         }
+        }
+
+        function removeBook(){
+            if(name.value == ""){
+                document.getElementById("bookName").innerHTML = "Name must be filled...";
+                document.getElementById("bookAuthor").innerHTML = "";
+                document.getElementById("bookYear").innerHTML = "";
+                document.getElementById("bookCopies").innerHTML = "";
+            }
+            else{
+                
+                get(child(ref(database), 'Books/'+ name.value)).then((snapshot)=>{
+                console.log("get");
+                if(snapshot.exists()){
+                    console.log(snapshot.val().copies);
+                    copies = snapshot.val().copies; 
+                }
+                else{
+                    console.log("Empty")
+                }
+
+                if(copies == 0){
+                    console.log("No More Copies")
+                }
+                else{
+                copies -= 1;
+                console.log("set");
+                set(ref(database, 'Books/' + name.value), {
+                    author: snapshot.val().author,
+                    year: snapshot.val().year,
+                    copies: copies
+                })
+                .then(()=>{
+                    console.log("Book Removed");
+                })
+                .catch((error)=>{
+                    alert("unsuccessful");
+                    //console.log(error);
+                })
+
+            }
+            }).catch((error)=>{
+                console.error(error);
+            })
+            }
         }
 /*
         function getCopies(name){
@@ -192,6 +240,7 @@
 */
         addBookButton.addEventListener('click', addBook);
         findBookButton.addEventListener('click', findBook);
+        removeBookButton.addEventListener('click', removeBook);
 
         
         //user login/logout
