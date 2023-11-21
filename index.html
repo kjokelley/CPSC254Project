@@ -4,7 +4,17 @@
         <style>label{display: inline-block; width: 80px}</style>
     </head>
     <body>
-        <h1>Admin Page</h1>
+
+        <header class="header">
+            <h1>My Library</h1>
+            <div class="logIn">
+              <button class="btn" id="logInBtn">Login</button>
+            </div>
+            <div class="logOut">
+              <button class="btn" id="logOutBtn">Log out</button>
+            </div>
+        </header>
+
 
         <label>Name</label> <input id="NameBox" type="text">
         <label>Author</label> <input id="AuthorBox" type="text">
@@ -43,6 +53,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
         import { getDatabase, ref, set, get, child, update, DataSnapshot, push, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
         // TODO: Add SDKs for Firebase products that you want to use
         // https://firebase.google.com/docs/web/setup#available-libraries
       
@@ -63,7 +74,6 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const database = getDatabase();
-        
 
         
         var addBookButton = document.getElementById("addBookBtn");
@@ -216,6 +226,32 @@
         loadButton.addEventListener('click', FetchAllData);
 
         
+        //user login/logout
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        const logInBtn = document.getElementById('logInBtn')
+        const logOutBtn = document.getElementById('logOutBtn')
+
+
+        const userSignIn = async() => {
+            signInWithPopup(auth, provider).then((result) => {
+                const user = result.user
+                console.log(user);
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message
+            })
+        }
+
+
+        const userSignOut = async() => {
+            signOut(auth).then(() => {
+                alert("You have signed out successfully")
+            }).catch((error) => {})
+        }
+
+        logInBtn.addEventListener("click", userSignIn);
+        logOutBtn.addEventListener("click", userSignOut);
 
       </script>
 
