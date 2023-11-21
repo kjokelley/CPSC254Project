@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<h1> Welcome To the Library!</h1>
+
+<style></style>
+</head>
+<body>
+    <label>Name</label> <input id="NameBox" type="text">
+    <br>
+    <button id="findBookBtn" type="button">Find Book</button>
+    <br>
+    <button id="loadFullLibrary" type="button">Load Full Library</button>
+
+    <p id="bookName">Enter above to search for a book!</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th> Title  </th>
+                <th> Author </th>
+                <th> Year Published </th>
+                <th> Copies Available </th>
+            </tr>
+        </thead>
+        <tbody id="data-output">
+
+        </tbody>
+    </table>
+
+
+    <script type="module">
+         // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
+        import { getDatabase, ref, set, get, child, update, DataSnapshot, push, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyDomy_iTgvqoDAFqJmU1sjLditwOKFdf_o",
+          authDomain: "cpsc254library.firebaseapp.com",
+          projectId: "cpsc254library",
+          storageBucket: "cpsc254library.appspot.com",
+          messagingSenderId: "783490531388",
+          appId: "1:783490531388:web:bfe47ed7a478703f52c339",
+          measurementId: "G-T5TJPH6M0G",
+          //databaseURL: "https://cpsc254library-default-rtdb.firebaseio.com"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase();
+
+
+        var findBookButton = document.getElementById("findBookBtn");
+        var loadButton = document.getElementById("loadFullLibrary");
+
+        var name = document.getElementById("NameBox");
+        var author = document.getElementById("AuthorBox");
+        var year = document.getElementById("YearBox");
+        var copies = 0;
+
+
+        function findBook(){
+            if(name.value == ""){
+                document.getElementById("bookName").innerHTML = "Name must be filled...";
+                document.getElementById("bookAuthor").innerHTML = "";
+                document.getElementById("bookYear").innerHTML = "";
+                document.getElementById("bookCopies").innerHTML = "";
+            }
+            else{
+            let libraryTable = document.querySelector("#data-output");
+            const dbref = ref(database)
+            get(child(dbref, 'Books/' + name.value)).then((snapshot)=> {
+                if(snapshot.exists()){
+                    ClearAllData();
+                    console.log(snapshot.val());
+                    let out = `
+                        <tr>
+                            <td>${name.value}</td>
+                            <td>${snapshot.val().author}</td>
+                            <td>${snapshot.val().year}</td>
+                            <td>${snapshot.val().copies}</td>
+                        </tr>  
+                        `;
+                        libraryTable.innerHTML = out;
+                }
+                else{
+                    console.log("Unavailable")
+                    document.getElementById("bookName").innerHTML = "Unavailable";
+                }
+            }).catch((error) => {
+                console.error(error);
+            })
+        }
+        }
+
+        findBookButton.addEventListener('click', findBook);
+        loadButton.addEventListener('click', FetchAllData);
+
+        function FetchAllData(){
+            console.log('test');
+            get(child(ref(database), 'Books/')).then((snapshot)=>{
+                console.log(snapshot.val());
+                let libraryTable = document.querySelector("#data-output");
+                let out = "";
+                snapshot.forEach(
+                    function(Childsnapshot){
+                        console.log(snapshot.val())
+                        console.log(Childsnapshot.val());
+                        console.log(JSON.stringify(Childsnapshot));
+                        console.log("Child: "+ Childsnapshot.val());
+                        let name = Childsnapshot.val().name;
+                        let author = Childsnapshot.val().author;
+                        let year = Childsnapshot.val().year;
+                        let copies = Childsnapshot.val().copies;
+                        out += `
+                        <tr>
+                            <td>${name}</td>
+                            <td>${author}</td>
+                            <td>${year}</td>
+                            <td>${copies}</td>
+                        </tr>  
+                        `;
+                    }
+                )
+                libraryTable.innerHTML = out;
+            })
+        }
+
+        function ClearAllData(){
+            let libraryTable = document.querySelector("#data-output");
+            libraryTable.innerHTML = "";
+        }
+
+
+        window.onload = FetchAllData();
+
+    </script>
+
+</body>
+</html>
