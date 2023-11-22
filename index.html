@@ -1,21 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    
+    <style>
+        .title {
+            text-align: center;
+            font-size: 50px;
+        }
+        .button1 {
+            text-align: center;
+            display:inline-block;
+            width: 33%;
+            height: 40px;
+            bottom: 10%;
+
+        }
+        .container{
+            text-align: center;
+            bottom: 10%;
+            border: 5px solid red;
+            position:absolute;
+            margin-top:1%;
+        }
+
+        body{
+            background-color: lightblue;
+        }
+
+        .btn{
+            padding: 5% 10%;
+            font-size: large;
+        }
+
+    </style>
 </head>
 
 <body>
+
     <header class="header">
-        <h1>My Library</h1>
-        <div class="logIn">
-          <button class="btn" id="logInBtn">Login</button>
+        <div class = "title">My Library</div>
+        <div id = "container">
+            <div class="button1">
+                <button class="btn" id="logInBtn">Login</button>
+            </div>
+            <div class="button1">
+                <button class="btn" id="logOutBtn">Log out</button>
+            </div>
+            <div class="button1">
+                <button class="btn" id="browseBtn">Browse</button>
+            </div>
         </div>
-        <div class="logOut">
-          <button class="btn" id="logOutBtn">Log out</button>
-        </div>
-        <div class="Browse">
-            <button class="btn" id="browseBtn">Browse</button>
-        </div>
+        <img src="https://www.marketplace.org/wp-content/uploads/2023/04/publiclibrary.jpg?fit=2800%2C1374"
+        style="width:100%;height:50%; margin-top: 2%;">
     </header>
 
 
