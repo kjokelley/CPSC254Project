@@ -66,16 +66,14 @@
 
     </body>
 
-<script type="module"> 
-        // Import the functions you need from the SDKs you need
+    <script type="module"> 
+        //Firebase imports for app connection, authenticaion
+        //and analytics
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
         import { getDatabase, ref, set, get, child, update, DataSnapshot} from "https://www.gstatic.com/firebasejs/10.6.0/firebase-database.js";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-      
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        //Firebase configuration, allows
+        //connectivity to our specific database
         const firebaseConfig = {
           apiKey: "AIzaSyDomy_iTgvqoDAFqJmU1sjLditwOKFdf_o",
           authDomain: "cpsc254library.firebaseapp.com",
@@ -86,28 +84,34 @@
           measurementId: "G-T5TJPH6M0G",
         };
       
-        // Initialize Firebase
+        // Initialize Firebase with configurations
+        // Creates reference to database
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const database = getDatabase();
 
-        
+        //finds and creates references to button elements
         var addBookButton = document.getElementById("addBookBtn");
         var findBookButton = document.getElementById("findBookBtn");
         var removeBookButton = document.getElementById("removeBookBtn");
         var loadButton = document.getElementById("loadFullLibrary");
 
-
+        //finds and creates references to input boxes
         var name = document.getElementById("NameBox");
         var author = document.getElementById("AuthorBox");
         var year = document.getElementById("YearBox");
+
+        //establishes copies variable
         var copies = 0;
         
+        //Takes in all information from input boxes and adds to database
         function addBook(){
+            //allow only fully filled out input
             if(name.value == "" || author.value == "" || year.value ==""){
                 document.getElementById("bookName").innerHTML = "All values must be filled...";
             }
             else{
+                //retrieves copies of entry first, then increments
                 get(child(ref(database), 'Books/'+ name.value +'/copies')).then((snapshot)=>{
                     if(snapshot.exists()){
                         console.log(snapshot.val());
@@ -116,6 +120,8 @@
                     else{
                         copies = 1;
                     }
+                    //sets node with all information provided
+                    //including incremented copies variable
                     set(ref(database, 'Books/' + name.value), {
                         name: name.value,
                         author: author.value,
@@ -135,16 +141,23 @@
             }
         }
 
+        //takes only name info from input box and retrieves entry from database
         function findBook(){
+            //allow only if name value is filled out
             if(name.value == ""){
                 document.getElementById("bookName").innerHTML = "Name must be filled...";
             }
             else{
+                //libraryTable is visual representation of database
+                //creates reference to table to adjust when book is found
                 let libraryTable = document.querySelector("#data-output");
                 const dbref = ref(database)
+                //retrieves node with book name
                 get(child(dbref, 'Books/' + name.value)).then((snapshot)=> {
+                //If data is found will output to table, otherwise will say it is unavailable
                 if(snapshot.exists()){
                     ClearAllData();
+                    //'out' is table input, created with retrieved information from database
                     let out = `
                     <tr>
                         <td>${name.value}</td>
@@ -153,6 +166,7 @@
                         <td>${snapshot.val().copies}</td>
                     </tr>  
                     `;
+                    //adjusts library table html information to retrieved entry from database
                     libraryTable.innerHTML = out;
                 }
                 else{
@@ -165,22 +179,26 @@
             }
         }
 
+        //Remove book from database by name entry only
         function removeBook(){
+            //allow only if name value is filled out
             if(name.value == ""){
                 document.getElementById("bookName").innerHTML = "Name must be filled...";
             }
             else{
+                //checks if there is a node with given title name
                 get(child(ref(database), 'Books/'+ name.value)).then((snapshot)=>{
+                //retrieves copies if found
                 if(snapshot.exists()){
                     copies = snapshot.val().copies; 
                 }
                 else{
                     console.log("Empty")
                 }
-
                 if(copies == 0){
                     console.log("No More Copies")
                 }
+                //decrements copies if entry exists and has more than 0
                 else{
                 copies -= 1;
                 set(ref(database, 'Books/' + name.value), {
@@ -203,16 +221,21 @@
             }
         }
 
+        //retrieves all entries from database and outputs to table
         function FetchAllData(){
             get(child(ref(database), 'Books/')).then((snapshot)=>{
+                //refrence to library table which displays data
                 let libraryTable = document.querySelector("#data-output");
                 let out = "";
+                //for every node, output to table
                 snapshot.forEach(
+                    //takes new snapshot at current node level
                     function(Childsnapshot){
                         let name = Childsnapshot.val().name;
                         let author = Childsnapshot.val().author;
                         let year = Childsnapshot.val().year;
                         let copies = Childsnapshot.val().copies;
+                        //'out' concatenates all entries
                         out += `
                         <tr>
                             <td>${name}</td>
@@ -223,19 +246,22 @@
                         `;
                     }
                 )
+                //outputs all entries to library table
                 libraryTable.innerHTML = out;
             })
         }
-
+        
+        //clears the table of all entries, does not interact with database
         function ClearAllData(){
             let libraryTable = document.querySelector("#data-output");
             libraryTable.innerHTML = "";
         }
 
 
+        //ensures all data available in table on initial load
         window.onload = FetchAllData();
 
-
+        //adds click listeners to all buttons
         addBookButton.addEventListener('click', addBook);
         findBookButton.addEventListener('click', findBook);
         removeBookButton.addEventListener('click', removeBook);

@@ -57,10 +57,14 @@
 
 </body>
 <script type="module">
-
+    //Firebase imports for app connection, authenticaion
+    //and analytics
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+
+    //Firebase configuration, allows
+    //connectivity to our specific database
     const firebaseConfig = {
       apiKey: "AIzaSyDomy_iTgvqoDAFqJmU1sjLditwOKFdf_o",
       authDomain: "cpsc254library.firebaseapp.com",
@@ -71,16 +75,20 @@
       measurementId: "G-T5TJPH6M0G",
     };
 
+    //app initializes our firebase connection with out configurations
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
 
     //user login/logout
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
+
+    //buttons link to admin/browse page with proper authentication
     const logInBtn = document.getElementById('logInBtn')
     const logOutBtn = document.getElementById('logOutBtn')
     const browseBtn = document.getElementById('browseBtn')
 
+    //sign in connections with googleauth for verification
     const userSignIn = async() => {
         signInWithPopup(auth, provider).then((result) => {
             const user = result.user
@@ -101,11 +109,15 @@
         }).catch((error) => {})
     }
 
+    //directs to userPage.html to browse
+    //no authentication required
     function userPage(){
         window.location = 'userPage.html';
         console.log('test');
     }
 
+
+    //click listeners for all buttons on page
     logInBtn.addEventListener("click", userSignIn);
     logOutBtn.addEventListener("click", userSignOut);
     browseBtn.addEventListener("click", userPage);
