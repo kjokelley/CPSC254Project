@@ -43,9 +43,6 @@
                 <button class="btn" id="logInBtn">Login</button>
             </div>
             <div class="button1">
-                <button class="btn" id="logOutBtn">Log out</button>
-            </div>
-            <div class="button1">
                 <button class="btn" id="browseBtn">Browse</button>
             </div>
         </div>
@@ -85,7 +82,6 @@
 
     //buttons link to admin/browse page with proper authentication
     const logInBtn = document.getElementById('logInBtn')
-    const logOutBtn = document.getElementById('logOutBtn')
     const browseBtn = document.getElementById('browseBtn')
 
     //sign in connections with googleauth for verification
@@ -103,11 +99,6 @@
     }
 
 
-    const userSignOut = async() => {
-        signOut(auth).then(() => {
-            alert("You have signed out successfully")
-        }).catch((error) => {})
-    }
 
     //directs to userPage.html to browse
     //no authentication required
@@ -119,7 +110,6 @@
 
     //click listeners for all buttons on page
     logInBtn.addEventListener("click", userSignIn);
-    logOutBtn.addEventListener("click", userSignOut);
     browseBtn.addEventListener("click", userPage);
     
 
